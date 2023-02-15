@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Prediction of Nonself Peptide Presentation on Human MHC Class II</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Prediction of Nonself Peptide Presentation
+on Human MHC Class II</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(epitopeR)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggseqlogo)</span></code></pre></div>
+<div id="aims" class="section level2">
+<h2>Aims</h2>
+<ol style="list-style-type: decimal">
+<li>Determine peptides from self (recipient) MHC</li>
+<li>Determine peptides from donor MHC</li>
+<li>Identify foreign donor peptides (not in the self peptidome)</li>
+<li>Predict peptides binding to recipient MHC</li>
+<li>Threshold for only donor peptides able to be presented on recipient
+MHC</li>
+</ol>
+</div>
+<div id="set-parameters" class="section level2">
+<h2>Set Parameters</h2>
+<p>The mhcII function requires several inputs.</p>
+<ol style="list-style-type: decimal">
+<li><p>Allele inputs: The presenting antigen, which is the
+self/recipient MHC II allele, is input as “ag_present.” The stimulating
+antigen, which is the foreign/donor MHC molecule, is input as “ag_stim.”
+Finally, self antigens from the homologous loci to the stimulating
+antigens are input as “ag_self.” Each of these inputs can either be an
+individual allele, or a set of alleles. The sequences of each allele are
+pulled from the IPD-IMGT/HLA Database and can be viewed <a href="https://www.ebi.ac.uk/ipd/imgt/hla/">here</a>. Alternatively, if
+the advanced user wishes to generate their own reference sequences, this
+can be manipulated by running the ref.R script.</p></li>
+<li><p>The “seq_len” parameter refers to the length of peptide to
+generate. For class II peptide presentation, we recommend a sequence
+length of 15. If the user wishes to consider peptides of varying
+lengths, they can input a string of multiple lengths separated by
+commas.</p></li>
+<li><p>The “cutoff” parameter sets the threshold for strong and weak
+binders. Multiple prediction methods are used, each of which provide
+different outputs (i.e. IC50, “strength”, “score”). Our justification
+for the default thresholds is below, however the user may choose to
+specify alternate cutoffs is desired.</p></li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># input antigen name</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>out_named_ag <span class="ot">&lt;-</span> <span class="fu">mhcII</span>(<span class="at">ag_present =</span> <span class="fu">c</span>(<span class="st">&quot;DRB1*08:01&quot;</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ag_stim =</span> <span class="fu">c</span>(<span class="st">&quot;DQA1_01_01&quot;</span>,<span class="st">&quot;DQA1_04_01&quot;</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ag_self =</span> <span class="fu">c</span>(<span class="st">&quot;DQA1_02_01&quot;</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seq_len =</span> <span class="dv">15</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">method =</span> <span class="st">&quot;net&quot;</span>)</span></code></pre></div>
+<p>Alternatively protein sequences for stimulating and self antigens can
+be input manually as stored variables. *Note this is not an option for
+the presenting allele “ag_present” which must be entered as a character
+string</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># input protein sequence</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dqa0101 <span class="ot">&lt;-</span> <span class="st">&quot;MILNKALLLGALALTTVMSPCGGEDIVADHVASCGVNLYQFYGPSGQYTHEFDGDEEFYVDLERKETAWRWPEFSKFGGFDPQGALRNMAVAKHNLNIMIKRYNSTAATNEVPEVTVFSKSPVTLGQPNTLICLVDNIFPPVVNITWLSNGQSVTEGVSETSFLSKSDHSFFKISYLTFLPSADEIYDCKVEHWGLDQPLLKHWEPEIPAPMSELTETVVCALGLSVGLVGIVVGTVFIIQGLRSVGASRHQGPL&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>dqa0202 <span class="ot">&lt;-</span> <span class="st">&quot;MILNKALMLGALALTTVMSPCGGEDIVADHVASYGVNLYQSYGPSGQFTHEFDGDEEFYVDLERKETVWKLPLFHRLRFDPQFALTNIAVLKHNLNILIKRSNSTAATNEVPEVTVFSKSPVTLGQPNTLICLVDNIFPPVVNITWLSNGHSVTEGVSETSFLSKSDHSFFKISYLTFLPSADEIYDCKVEHWGLDEPLLKHWEPEIPAPMSELTETVVCALGLSVGLVGIVVGTVLIIRGLRSVGASRHQGPL&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>dqa0401 <span class="ot">&lt;-</span> <span class="st">&quot;MILNKALLLGALALTTVMSPCGGEDIVADHVASYGVNLYQSYGPSGQYTHEFDGDEQFYVDLGRKETVWCLPVLRQFRFDPQFALTNIAVTKHNLNILIKRSNSTAATNEVPEVTVFSKSPVTLGQPNTLICLVDNIFPPVVNITWLSNGHSVTEGVSETSFLSKSDHSFFKISYLTFLPSADEIYDCKVEHWGLDEPLLKHWEPEIPAPMSELTETVVCALGLSVGLVGIVVGTVFIIRGLRSVGASRHQGPL&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>out_stored_ag <span class="ot">&lt;-</span> <span class="fu">mhcII</span>(<span class="at">ag_present =</span>  <span class="fu">c</span>(<span class="st">&quot;DRB1*08:01&quot;</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ag_stim =</span> <span class="fu">c</span>(dqa0101, dqa0401),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ag_self =</span> <span class="fu">c</span>(dqa0202),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                  <span class="at">seq_len =</span> <span class="dv">15</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                  <span class="at">method =</span> <span class="st">&quot;net&quot;</span>)</span></code></pre></div>
+</div>
+<div id="filter-by-core-mutation-only" class="section level2">
+<h2>Filter by Core Mutation Only</h2>
+<div id="since-mhcii-has-an-open-binding-pocket-it-presents-peptides-that-may-be-several-amino-acids-longer-than-core-sequence-required-to-bind-that-particular-mhc.-in-some-cases-the-user-may-want-to-filter-their-results-in-order-to-keep-only-peptides-with-a-mutation-in-the-core-binding-sequence-when-compared-to-the-equivalent-self-peptide.-in-order-to-achieve-this-input-the-aligned-stimulating-and-self-antigens-we-recommend-the-multiple-sequence-alignment-tool-from-the-bioconductor-package-msa.-the-sequence-positions-of-the-core-in-the-stimulating-peptide-are-determined-and-sequences-are-annotated-to-denote-whether-there-is-a-sequence-different-between-stimulating-and-self-peptides-in-the-core-binding-sequence.-to-use-this-function-the-peptide-dataframe-needs-to-have-peptides-only-from-one-stimulating-antigen." class="section level4">
+<h4>Since MHCII has an open binding pocket, it presents peptides that
+may be several amino acids longer than core sequence required to bind
+that particular MHC. In some cases, the user may want to filter their
+results, in order to keep only peptides with a mutation in the core
+binding sequence (when compared to the equivalent self peptide). In
+order to achieve this, input the aligned stimulating and self antigens
+(we recommend the multiple sequence alignment tool from the bioconductor
+package msa). The sequence positions of the core in the stimulating
+peptide are determined, and sequences are annotated to denote whether
+there is a sequence different between stimulating and self peptides in
+the core binding sequence. To use this function, the peptide dataframe
+needs to have peptides only from one stimulating antigen.</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run prediction of dqa0202 and dqa0401</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>out_single_ag <span class="ot">&lt;-</span> <span class="fu">mhcII</span>(<span class="at">ag_present =</span>  <span class="fu">c</span>(<span class="st">&quot;DRB1*08:01&quot;</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ag_stim =</span> <span class="fu">c</span>(dqa0101),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ag_self =</span> <span class="fu">c</span>(dqa0202),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">seq_len =</span> <span class="dv">15</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">method =</span> <span class="st">&quot;net&quot;</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>dqa0101_algn <span class="ot">&lt;-</span> <span class="st">&quot;MILNKALLLGALALTTVMSPCGGEDIVADHVASCGVNLYQFYGPSGQYTHEFDGDEEFYVDLERKETAWRWPEFSKFGGFDPQGALRNMAVAKHNLNIMIKRYNSTAATNEVPEVTVFSKSPVTLGQPNTLICLVDNIFPPVVNITWLSNGQSVTEGVSETSFLSKSDHSFFKISYLTFLPSADEIYDCKVEHWGLDQPLLKHWEPEIPAPMSELTETVVCALGLSVGLVGIVVGTVFIIQGLRSVGASRHQGPL&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>dqa0202_algn <span class="ot">&lt;-</span> <span class="st">&quot;MILNKALMLGALALTTVMSPCGGEDIVADHVASYGVNLYQSYGPSGQFTHEFDGDEEFYVDLERKETVWKLPLFHRLR-FDPQFALTNIAVLKHNLNILIKRSNSTAATNEVPEVTVFSKSPVTLGQPNTLICLVDNIFPPVVNITWLSNGHSVTEGVSETSFLSKSDHSFFKISYLTFLPSADEIYDCKVEHWGLDEPLLKHWEPEIPAPMSELTETVVCALGLSVGLVGIVVGTVLIIRGLRSVGASRHQGPL&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>core_mut_result <span class="ot">&lt;-</span> <span class="fu">core_mut</span>(out_single_ag, <span class="at">ag_stim=</span>dqa0101_algn, <span class="at">ag_self=</span>dqa0202_algn)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>core_mut_result <span class="ot">&lt;-</span> core_mut_result <span class="sc">%&gt;%</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(core_mut<span class="sc">==</span><span class="st">&quot;yes&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(core_mut))</span></code></pre></div>
+</div>
+</div>
+<div id="additional-filtering" class="section level2">
+<h2>Additional Filtering</h2>
+<div id="the-user-can-explore-the-percentile-rank-and-ic50-of-initial-results-and-choose-to-apply-or-adjust-filtering-as-desired" class="section level3">
+<h3>The user can explore the percentile rank and IC50 of initial results
+and choose to apply or adjust filtering as desired</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>out_stored_ag <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">antigen=</span><span class="fu">as.factor</span>(antigen)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(antigen, rank_val, <span class="at">color=</span><span class="fu">as.factor</span>(strength_rank))) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_jitter</span>(<span class="at">width=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">xlab</span>(<span class="st">&quot;Stimulating Antigen&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ylab</span>(<span class="st">&quot;Adjusted Rank (Percentile)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">&quot;Predicted Binding&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme_light</span>()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot of rank x IC50</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>out_stored_ag <span class="sc">%&gt;%</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(score_val, rank_val, <span class="at">color=</span><span class="fu">as.factor</span>(antigen), <span class="at">group=</span><span class="fu">as.factor</span>(antigen))) <span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="fu">as.factor</span>(antigen)) <span class="sc">+</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">color=</span><span class="st">&quot;Antigen&quot;</span>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>out_stored_ag <span class="ot">&lt;-</span> <span class="fu">mhcII</span>(<span class="at">ag_present =</span>  <span class="fu">c</span>(<span class="st">&quot;DRB1*08:01&quot;</span>),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ag_stim =</span> <span class="fu">c</span>(dqa0101, dqa0401),</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ag_self =</span> <span class="fu">c</span>(dqa0202),</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">seq_len =</span> <span class="dv">15</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">method =</span> <span class="st">&quot;net&quot;</span>,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cutoff_score =</span> <span class="fu">list</span>(<span class="at">cutoff_netpan =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">200</span>),</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">cutoff_comblib =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">200</span>),</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">cutoff_nn_align =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">200</span>),</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">cutoff_sturniolo =</span> <span class="fu">c</span>(<span class="dv">2</span>)),</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>                 <span class="at">cutoff_rank=</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">10</span>))</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot of rank x IC50</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>out_stored_ag <span class="sc">%&gt;%</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(score_val, rank_val, <span class="at">color=</span><span class="fu">as.factor</span>(antigen), <span class="at">group=</span><span class="fu">as.factor</span>(antigen))) <span class="sc">+</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span><span class="fu">as.factor</span>(antigen)) <span class="sc">+</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">color=</span><span class="st">&quot;Antigen&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="visualize-peptides-by-seqlogo-plot" class="section level1">
+<h1>Visualize Peptides By Seqlogo Plot</h1>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dqa_01_peps <span class="ot">&lt;-</span> out_named_ag <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(antigen<span class="sc">==</span><span class="st">&quot;DQA1_04_01&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(strength_rank<span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;weak&quot;</span>, <span class="st">&quot;strong&quot;</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggseqlogo</span>(dqa_01_peps<span class="sc">$</span>pep_stim)</span></code></pre></div>
+<div id="default-cutoff-values" class="section level2">
+<h2>Default Cutoff Values</h2>
+<p>Initial thresholds for IC50 thresholds were determined by Sette in
+1998, with IC50&lt;100 is strong, 100-1000 is weak (1). More recently,
+IEDB guidelines recommend using IC50 &lt;50 and and 50-500 for strong
+and intermediate affinity groups. “As a rough guideline, peptides with
+IC50values &lt;50 nM are considered high affinity, &lt;500 nM
+intermediate affinity and &lt;5000 nM low affinity. Most known epitopes
+have high or intermediate affinity. Some epitopes have low affinity, but
+no known T-cell epitope has an IC50 value greater than 5000.” (2)
+Thresholds for IC50 can be used for most methods other than netmhcpan_el
+and Sturniolo. Sturniolo scoring positively correlates with binding
+affinity, therefore a higher score is preferred. In Hammer 1994, the
+authors concluded that the majority of peptides with strong binding
+affinity had a score &gt;= 2 (3). There is no additional threshold for
+weak binding affinity, so only one threshold is used for this scoring
+system. For netmhcpan_ba and netmhcpan_el, the provided output “percent
+rank” is a transformation that normalizes prediction scores by
+comparison to the predicted scores of random natural peptides (4). Since
+netmhcpan_el is based off of studies of experimentally eluted peptides
+rather than studies of binding affinity, it can not be thresholded by
+IC50 as other scores. Rather, the provided “score” is the likelihood of
+the peptide being an eluted ligand - for example, a score of 0.66 means
+a likelihood of 66% that the peptide would be a ligand. For this method
+of peptide scoring, we have chosen to use the adjusted percent rank to
+threshold, with cutoffs of 2% and 10% as recommended (4).</p>
+</div>
+<div id="references" class="section level2">
+<h2>References:</h2>
+<ol style="list-style-type: decimal">
+<li>Several Common HLA-DR Types Share Largely Overlapping Peptide
+Binding Repertoires Scott Southwood, John Sidney, Akihiro Kondo,
+Marie-France del Guercio, Ettore Appella, Stephen Hoffman, Ralph T.
+Kubo, Robert W. Chesnut, Howard M. Grey, Alessandro Sette. The Journal
+of Immunology April 1, 1998, 160 (7) 3363-3373.</li>
+<li>Vita R, Mahajan S, Overton JA, Dhanda SK, Martini S, Cantrell JR,
+Wheeler DK, Sette A, Peters B. The Immune Epitope Database (IEDB): 2018
+update. Nucleic Acids Res. 2019 Jan 8;47(D1):D339-D343. doi:
+10.1093/nar/gky1006. PMID: 30357391; PMCID: PMC6324067.</li>
+<li>Hammer, J., E. Bono, F. Gallazzi, C. Belunis, Z. Nagy, F.
+Sinigaglia. 1994. Precise prediction of major histocompatibility complex
+class II-peptide interaction based on peptide side chain scanning. J.
+Exp. Med. 180: 2353</li>
+<li>Reynisson B., Alvarez B., Paul S., Peters B., Nielsen M. 2020.
+NetMHCpan-4.1 and NetMHCIIpan-4.0: improved predictions of MHC antigen
+presentation by concurrent motif deconvolution and integration of MS MHC
+eluted ligand data. Nucleic Acids Res. 48(W1):W449-W454.</li>
+</ol>
+</div>
+<div id="references-by-prediction-method" class="section level2">
+<h2>References by Prediction Method</h2>
+<p>Consensus:</p>
+<ul>
+<li>Wang P, Sidney J, Kim Y, Sette A, Lund O, Nielsen M, Peters B. 2010.
+Peptide binding predictions for HLA DR, DP and DQ molecules. BMC
+Bioinformatics. 11:568.</li>
+<li>Wang P, Sidney J, Dow C, Mothé B, Sette A, Peters B. 2008. A
+systematic assessment of MHC class II peptide binding predictions and
+evaluation of a consensus approach. PLoS Comput Biol.
+4(4):e1000048.</li>
+</ul>
+<p>NN-align:</p>
+<ul>
+<li><p>Jensen KK, Andreatta M, Marcatili P, Buus S, Greenbaum JA, Yan Z,
+Sette A, Peters B, Nielsen M. 2018. NN-align. Improved methods for
+predicting peptide binding affinity to MHC class II molecules.
+Immunology 154(3):394-406.</p></li>
+<li><p>Nielsen M, Lund O. 2009. NN-align. An artificial neural
+network-based alignment algorithm for MHC class II peptide binding
+prediction. BMC Bioinformatics. 10:296.</p></li>
+</ul>
+<p>SMM-align:</p>
+<ul>
+<li>Nielsen M, Lundegaard C, Lund O. 2007. Prediction of MHC class II
+binding affinity using SMM-align, a novel stabilization matrix alignment
+method. BMC Bioinformatics. 8:238.</li>
+</ul>
+<p>Combinatorial library:</p>
+<ul>
+<li>Sidney J, Assarsson E, Moore C, Ngo S, Pinilla C, Sette A, Peters B.
+2008. Quantitative peptide binding motifs for 19 human and mouse MHC
+class I molecules derived using positional scanning combinatorial
+peptide libraries. Immunome Res 4:2.</li>
+</ul>
+<p>Sturniolo:</p>
+<ul>
+<li>Sturniolo T, Bono E, Ding J, Raddrizzani L, Tuereci O, Sahin U,
+Braxenthaler M, Gallazzi F, Protti MP, Sinigaglia F, Hammer J. 1999.
+Generation of tissue-specific and promiscuous HLA ligand databases using
+DNA microarrays and virtual HLA class II matrices. Nat Biotechnol.
+17(6):555-561.</li>
+</ul>
+<p>NetMHCIIpan:</p>
+<ul>
+<li><p>Reynisson B., Alvarez B., Paul S., Peters B., Nielsen M. 2020.
+NetMHCpan-4.1 and NetMHCIIpan-4.0: improved predictions of MHC antigen
+presentation by concurrent motif deconvolution and integration of MS MHC
+eluted ligand data. Nucleic Acids Res. 48(W1):W449-W454.</p></li>
+<li><p>Jensen KK, Andreatta M, Marcatili P, Buus S, Greenbaum JA, Yan Z,
+Sette A, Peters B, Nielsen M. 2018. Improved methods for predicting
+peptide binding affinity to MHC class II molecules. Immunology
+154(3):394-406.</p></li>
+<li><p>Andreatta M, Karosiene E, Rasmussen M, Stryhn A, Buus S, and
+Nielsen M. 2015. Accurate pan-specific prediction of peptide-MHC class
+II binding affinity with improved binding core identification.
+Immunogenetics.67(11-12):641-50. PMID: 26416257 Download PDF</p></li>
+</ul>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

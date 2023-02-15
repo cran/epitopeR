@@ -1,0 +1,224 @@
+---
+title: "Prediction of HY Associated Epitopes"
+description: |
+  The HY model is a simplified model used to study host response to transplantation. When a male graft is transplanted to a female recipient from the same inbred strain of mice, the only 'nonself' genetic material can be traced to the Y chromosome. Here we select 3 key proteins from the bl/6 Y chromosome and use their corresponding protein on the X chromosome to identify peptides that may be recognized as foreign. We compare out peptide detection to the known set of HY peptides. 
+output:
+  rmarkdown::html_vignette:
+    md_extensions: -autolink_bare_uris
+    code_folding: hide
+vignette: |
+  %\VignetteIndexEntry{Prediction of HY Associated Epitopes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  eval = FALSE,
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Import libraries
+
+```{r setup, eval = TRUE}
+suppressPackageStartupMessages({
+library(tidyverse)
+library(seqinr)
+library(tibble)
+library(epitopeR)
+})
+
+# system folder to pull out samle data tables
+fd_dat <- "extdata/vgn/data"
+
+# local function for ggplot()
+theme_lcl <- function(){
+  theme(plot.title = element_text(hjust = 0.5, size = 6),
+        axis.title = element_text(size = 4),
+        legend.title = element_text(size = 4),
+        axis.text.x = element_text(angle = 30, hjust = 0.5, vjust = 0.8, size = 4),  
+        axis.text.y = element_text(size = 4),  
+        legend.text = element_text(size = 4),
+        legend.key.width = unit(0.2, "cm"),
+        legend.key.height = unit(0.2, "cm"),
+        legend.position = "bottom")
+}
+```
+
+## pick relevant proteins
+
+MGI gene expression search results\
+Field input: ChrY, wild-type only, results from all assay types, Anatomic location (one spleen, one skin)\
+Filter: detected=="yes" Two files, one is genes expressed in Skin, the other is genes expressed in Spleen
+
+```{r dat, eval = TRUE}
+spleen <- read.delim(system.file(fd_dat, "MGIgeneExpr_ChrY_spleen.txt", package = "epitopeR")) %>%
+  select(Gene.Symbol, Strain, Sex, Structure)
+
+skin <- read.delim(system.file(fd_dat, "MGIgeneExpr_ChrY_skin.txt", package = "epitopeR")) %>%
+  select(Gene.Symbol, Strain, Sex, Structure)
+```
+
+```{r gex, eval = TRUE, out.width = '100%', dpi = 300}
+gex <- spleen %>%
+        bind_rows(skin) %>%
+        mutate(Gene.Symbol = as.factor(Gene.Symbol)) %>%
+        select(-c(Strain, Sex)) %>%
+        unique()
+
+gex %>%
+    ggplot(aes(Gene.Symbol, fill = Structure)) + 
+    geom_bar() +
+    ggtitle("HY Gene Expression by Tissue") +
+    theme_lcl()
+```
+
+## Focus on Utx, DDx3y (or Dby), and Kdm5d(or Smcy)
+
+```{r sequences, eval = TRUE}
+# stim, donor, foreign: y
+# self: x
+# presenting - H2-IAb for class II, "H-2-Db" and "H-2-Db" for class I
+
+utx <- read.fasta(system.file(fd_dat, "utx_r.fasta", package = "epitopeR"), 
+                  as.string = TRUE, seqonly = TRUE) %>% unlist
+
+uty <- read.fasta(system.file(fd_dat, "uty_d.fasta", package = "epitopeR"), 
+                  as.string = TRUE, seqonly = TRUE) %>% unlist
+
+ddx3x <- read.fasta(system.file(fd_dat, "ddx3x.fasta", package = "epitopeR"), 
+                    as.string = TRUE, seqonly = TRUE) %>% unlist
+
+ddx3y <- read.fasta(system.file(fd_dat, "ddx3y.fasta", package = "epitopeR"), 
+                    as.string = TRUE, seqonly = TRUE) %>% unlist
+
+kdm5c <- read.fasta(system.file(fd_dat, "kdm5c.fasta", package = "epitopeR"), 
+                    as.string = TRUE, seqonly = TRUE) %>% unlist
+
+kdm5d <- read.fasta(system.file(fd_dat, "kdm5d.fasta", package = "epitopeR"), 
+                    as.string = TRUE, seqonly = TRUE) %>% unlist
+
+rm(fd_dat)
+```
+
+## MHC class I
+
+```{r mhcI, eval = TRUE}
+mhcI_wrapper <- function(pres_in, stim_in, self_in, len_in, mth_in){
+  out <- mhcI(ag_present = pres_in, 
+              ag_stim = stim_in, 
+              ag_self = self_in,
+              seq_len = len_in, method = mth_in)
+  return(out)
+}
+
+pres1 <- c("H-2-Db", "H-2-Kb")
+len1 <- "9"
+mth1 <- "recommended"
+
+re_ut <- re_ddx3 <- re_kdm5 <- data.frame()
+
+for (i in 1:length(pres1))
+{
+  tmp <- mhcI_wrapper(pres_in = pres1[i], stim_in = uty, self_in = utx,
+                      len_in = len1, mth_in = mth1)
+  re_ut <- re_ut %>% rbind(tmp)
+  rm(tmp)
+  
+  tmp <- mhcI_wrapper(pres_in = pres1[i], stim_in = ddx3y, self_in = ddx3x,
+                      len_in = len1, mth_in = mth1)
+  re_ddx3 <- re_ddx3 %>% rbind(tmp)
+  rm(tmp)
+
+  tmp <- mhcI_wrapper(pres_in = pres1[i], stim_in = kdm5d, self_in = kdm5c,
+                      len_in = len1, mth_in = mth1)
+  re_kdm5 <- re_kdm5 %>% rbind(tmp)
+  rm(tmp)
+}
+
+re_mhc1 <- rbind(re_ut, re_ddx3, re_kdm5)
+
+rm(mhcI_wrapper, pres1, len1, mth1, re_ut, re_ddx3, re_kdm5)
+```
+
+## MHC class II
+
+```{r mhcII, eval = TRUE}
+pres2 <- c("H2-IAb")
+len2 <- "15"
+mth2 <- "recommended"
+
+re_ut <- mhcII(ag_stim = uty, 
+               ag_self = utx,
+               ag_present = pres2, seq_len = len2, method = mth2,
+               nm_stim = "uty",
+               nm_self = "utx")
+
+re_ddx3 <- mhcII(ag_stim = ddx3y, 
+                 ag_self = ddx3x,
+                 ag_present = pres2, seq_len = len2, method = mth2,
+                 nm_stim = "ddx3y",
+                 nm_self = "ddx3x")
+
+re_kdm5 <- mhcII(ag_stim = kdm5d, 
+                 ag_self = kdm5c,
+                 ag_present = pres2, seq_len = len2, method = mth2,
+                 nm_stim = "kdm5d",
+                 nm_self = "kdm5c")
+
+re_mhc2 <- rbind(re_ut, re_ddx3, re_kdm5)
+
+rm(pres2, len2, mth2, re_ut, re_ddx3, re_kdm5)
+
+```
+
+## List of known peptides
+
+```{r pep list, eval = TRUE}
+HY_peptides <- c("WMHHNMDLI", "KCSRNRQYL", "NAGFNSNRANSSRSS")
+```
+
+## Display predicted peptides with known peptides highlighted, facet by allele and by protein
+
+```{r plot, eval = TRUE, out.width = '100%', dpi = 300}
+out <- re_mhc2 %>%
+        select(allele, antigen, pep_stim, score_val, rank_val) %>%
+        rbind(re_mhc1 %>% select(allele, antigen, pep_stim, 
+                                 score_val = score, rank_val = percentile_rank))  %>%
+         #mutate(known = ifelse(pep_stim %in% HY_peptides, "known", "other"))
+  mutate(known = ifelse(pep_stim %in% HY_peptides, "yes", "no"))
+
+out %>%
+  filter(allele %in% c("H-2-Kb", "H-2-Db")) %>%
+   ggplot(aes(rank_val, score_val, color = known)) + 
+   geom_jitter(size = 0.5, alpha = 0.7, position = position_jitter(width = .2)) +
+  scale_color_manual(values=c("cornflowerblue", "red")) +
+   facet_grid(allele~antigen, scales = "free") + 
+   ggtitle("Predicted Peptides by Score and Percent Rank") +
+   ylab("Elution Likelihood Score") + 
+   xlab("Adjusted Percent Rank") +
+   scale_size_continuous(guide = "none") + 
+   theme_lcl()
+
+out %>%
+   filter(allele %in% c("H2-IAb")) %>%
+   ggplot(aes(rank_val, score_val, color = known)) + 
+   geom_jitter(size = 0.5, alpha = 0.7, position = position_jitter(width = .2)) +
+   scale_color_manual(values=c("cornflowerblue", "red")) +
+   facet_grid(allele~antigen, scales = "free") + 
+   ylab("IC50") + 
+   xlab("Adjusted Percent Rank") +
+   ggtitle("Predicted Peptides by Score and Percent Rank") +
+   #scale_size_continuous(guide = "none") + 
+   theme_lcl()
+```
+
+## References:
+
+1.  MGI [Mouse Gene Expression Database](http://www.informatics.jax.org)
+2.  Protein sequences [Uniprot](https://www.uniprot.org)
+3.  Smcy Epitope [Scott 1995, Nature. Identification of a mouse male-specific transplantation antigen, H-Y](https://doi.org/10.1038/376695a0)
+4.  Utx Epitope [Greenfield 1996, Nature Genetics. An H--YDb epitope is encoded by a novel mouse Y chromosome gene](https://doi.org/10.1038/ng1296-474)
+5.  Ddx3y Epitope [Lantz 2000, Nature Immunology. γ chain required for naïve CD4+ T cell survival but not for antigen proliferation](https://doi.org/10.1038/76917)
